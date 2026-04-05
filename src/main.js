@@ -11,11 +11,19 @@ const romanceSentence = document.querySelector(".romance-sentence");
 const discriptionText = "Enter a number to create a romantic sky:";
 const reEnterDiscriptionText =
   "Please re-enter a number to create a romantic sky:";
-const outOfRangeDiscriptionText = "Did you really think that would work?";
+const outOfRangeDiscriptionText =
+  "I admire the confidence, but let’s keep it realistic :D";
 const romanceSentenceText =
   "Every moment with you is a gift, just like the stars above.";
 
 let inputValue;
+
+const parseFiniteNumber = (raw) => {
+  const trimmed = String(raw ?? "").trim();
+  if (trimmed === "") return null;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : null;
+};
 
 inputElement.addEventListener("input", (e) => {
   inputValue = e.target.value;
@@ -23,7 +31,9 @@ inputElement.addEventListener("input", (e) => {
 
 inputElement.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    if (inputValue <= 0 || isNaN(inputValue)) {
+    const n = parseFiniteNumber(inputValue);
+
+    if (n === null) {
       inputValue = "";
       inputElement.value = "";
       discription.innerHTML = null;
@@ -33,7 +43,9 @@ inputElement.addEventListener("keydown", (e) => {
         inputElement.focus();
       });
       return;
-    } else if (inputValue > 100) {
+    }
+
+    if (!Number.isInteger(n) || n < 1 || n > 100) {
       inputValue = "";
       inputElement.value = "";
       discription.innerHTML = null;
@@ -44,8 +56,9 @@ inputElement.addEventListener("keydown", (e) => {
       });
       return;
     }
+
     discriptionContainerElement.classList.add("transparent");
-    createStars(inputValue);
+    createStars(n);
   }
 });
 
@@ -63,7 +76,7 @@ const createStars = (count) => {
     starElement.style.top = Math.random() * 100 + "%";
     setTimeout(() => {
       body.appendChild(starElement);
-      if (i == count - 1) {
+      if (i === count - 1) {
         sentence.classList.add("show");
         showRomnceSentence(romanceSentenceText);
         retryButton.classList.remove("btn-disabled");
